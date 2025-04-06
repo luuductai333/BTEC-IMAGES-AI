@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Photo Editing with AI | BTEC IMAGES AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap');
+        
+        :root {
+            --primary: #6366F1;  /* Updated indigo */
+            --secondary: #EC4899; /* Updated pink */
+            --dark: #1F2937;     /* Updated dark gray */
+            --light: #F9FAFB;     /* Updated light gray */
+            --accent: #10B981;   /* Updated emerald */
+            --background: #111827; /* Dark blue-gray for background */
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--background);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+        }
+        
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: rgba(31, 41, 55, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            min-width: 220px;
+            overflow: hidden;
+            transform: translateY(10px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dropdown:hover .dropdown-menu {
+            display: block;
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .nav-item {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: var(--secondary);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-item:hover:after {
+            width: 100%;
+        }
+        
+        /* Background overlay with blur */
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('Blue Modern AI Technology Presentation.jpg') no-repeat center center;
+            background-size: cover;
+            filter: blur(8px) brightness(0.4);
+            z-index: -1;
+        }
+        
+        /* Loading Spinner */
+        #loadingSpinner {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Input styling */
+        .input-field {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        /* Button styling */
+        .btn-primary {
+            background: var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #4F46E5;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px rgba(99, 102, 241, 0.5);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        /* Image placeholder */
+        .image-placeholder {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+        
+        /* Utility classes */
+        .hidden {
+            display: none;
+        }
+        
+        .text-gradient {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        /* Style cho dropdown select */
+        #aiFunction {
+            appearance: none;
+           -webkit-appearance: none;
+           -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23EC4899' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-position: right 1rem center;
+            background-repeat: no-repeat;
+            background-size: 1em;
+            cursor: pointer;
+        }
+
+        /* Style cho các option */
+        #aiFunction option {
+            background-color: var(--dark);
+            color: white;
+            padding: 12px;
+            font-size: 1rem;
+        }
+
+        /* Highlight option khi hover */
+        #aiFunction option:hover {
+            background-color: var(--primary) !important;
+            color: white;
+        }
+
+        /* Style cho option được chọn */
+        #aiFunction option:checked {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Style khi dropdown mở */
+        #aiFunction:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.3);
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Background overlay -->
+    <div class="background-overlay"></div>
+    
+    <!-- Header -->
+    <header class="glass-card text-white py-4 fixed w-full top-0 z-50">
+        <nav class="container mx-auto flex justify-between items-center px-6">
+            <div class="flex items-center space-x-3">
+                <img src="https://btec.fpt.edu.vn/wp-content/uploads/2024/06/LogoBTEC.png" alt="Logo" class="h-12 w-12 rounded-full border-2 border-white shadow-lg">
+                <div class="text-3xl font-extrabold tracking-tight">BTEC IMAGES<span class="text-gradient"> AI</span></div>
+            </div>
+            <ul class="flex space-x-8 items-center">
+                <li><a href="index.html" class="nav-item text-lg font-medium">Home</a></li>
+                <li><a href="index.html#services" class="nav-item text-lg font-medium">Services</a></li>
+                <li><a href="photo_editing.html" class="nav-item text-lg font-medium text-gradient">Photo Editor</a></li>
+                <li class="relative dropdown ml-4">
+                    <button id="user-button" class="hidden flex items-center space-x-2 bg-white bg-opacity-10 text-white px-4 py-2 rounded-full shadow-lg hover:bg-opacity-20 transition-all">
+                        <img id="user-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="h-8 w-8 rounded-full border-2 border-yellow-300">
+                        <span id="user-name" class="font-medium"></span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <ul class="dropdown-menu py-2 text-white">
+                        <li class="px-4 py-3 font-semibold border-b border-gray-700 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            <span id="user-email"></span>
+                        </li>
+                        <li>
+                            <button id="logout-button" class="w-full text-left px-4 py-3 hover:bg-red-500 hover:bg-opacity-20 hover:text-red-400 flex items-center transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                Logout
+                            </button>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-6 pt-28 pb-12">
+        <!-- Hero Section -->
+        <div class="text-center mb-16 animate__animated animate__fadeIn">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
+                AI Photo Editor
+            </h1>
+            <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                Transform your images with our powerful AI tools. Enhance, edit, and create stunning visuals in seconds.
+            </p>
+        </div>
+        
+        <!-- Editor Section -->
+        <div class="glass-card p-8 rounded-2xl shadow-2xl max-w-5xl mx-auto mb-16 animate__animated animate__fadeInUp">
+            <div class="mb-8">
+                <label for="imageUpload" class="block text-left font-medium text-gray-300 mb-3">Upload Your Image</label>
+                <div class="relative">
+                    <input type="file" id="imageUpload" accept="image/*" class="input-field p-4 rounded-xl w-full">
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Conditional Inputs -->
+            <div class="mb-8 hidden" id="textInputContainer">
+                <label for="textInput" class="block text-left font-medium text-gray-300 mb-3">Describe Your Image</label>
+                <input type="text" id="textInput" placeholder="A beautiful sunset over mountains..." class="input-field p-4 rounded-xl w-full">
+            </div>
+            
+            <div class="mb-8 hidden" id="selfieTextInputContainer">
+                <label for="selfieTextInput" class="block text-left font-medium text-gray-300 mb-3">Describe Your AI Selfie Style</label>
+                <input type="text" id="selfieTextInput" placeholder="Cyberpunk style with neon lights..." class="input-field p-4 rounded-xl w-full">
+            </div>
+            
+            <!-- AI Tool Selection -->
+            <div class="mb-8">
+                <label for="aiFunction" class="block text-left font-medium text-gray-300 mb-3">Select AI Tool</label>
+                <select id="aiFunction" class="input-field p-4 rounded-xl w-full">
+                    <option value="background-remover">Background Remover</option>
+                    <option value="colorizer">Image Colorizer</option>
+                    <option value="super-resolution">Super Resolution</option>
+                    <option value="image-expansion">Expand Image</option>
+                    <option value="text-to-image">Create Image with Text</option>
+                    <option value="ai-selfie-generator">AI Selfie Generator</option>
+                </select>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button id="processImage" class="btn-primary px-8 py-4 rounded-xl font-bold flex-grow text-lg hover:shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Process Image
+                </button>
+                <button id="newProject" class="btn-secondary px-8 py-4 rounded-xl font-bold text-lg hover:shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    New Project
+                </button>
+            </div>
+        </div>
+        
+        <!-- Image Comparison Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 animate__animated animate__fadeIn">
+            <!-- Original Image -->
+            <div class="glass-card p-6 rounded-2xl">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-2xl font-bold text-gray-200">Original</h3>
+                    <span class="text-sm text-gray-400">Uploaded image</span>
+                </div>
+                <div class="image-placeholder rounded-xl flex items-center justify-center p-8" style="min-height: 350px;">
+                    <img id="uploadedImage" class="max-w-full max-h-96 hidden rounded-lg">
+                    <div id="uploadPlaceholder" class="text-center text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <p class="text-lg">No image uploaded</p>
+                        <p class="text-sm mt-1">Drag & drop or click to upload</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Processed Image -->
+            <div class="glass-card p-6 rounded-2xl">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-2xl font-bold text-gray-200">Processed</h3>
+                    <span class="text-sm text-gray-400">AI enhanced</span>
+                </div>
+                <div class="image-placeholder rounded-xl flex items-center justify-center p-8" style="min-height: 350px;">
+                    <img id="outputImage" class="max-w-full max-h-96 hidden rounded-lg">
+                    <div id="outputPlaceholder" class="text-center text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                        <p class="text-lg">Processed image</p>
+                        <p class="text-sm mt-1">Will appear here after processing</p>
+                    </div>
+                </div>
+                <button id="downloadImage" class="hidden mt-6 w-full btn-primary px-6 py-3 rounded-xl font-bold">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Download Image
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="hidden">
+            <div class="spinner"></div>
+            <p class="mt-6 text-white font-medium text-lg">Processing your image with AI...</p>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-900 bg-opacity-80 text-white pt-20 pb-8 relative backdrop-filter backdrop-blur-lg">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-start">
+                <div class="mb-8 md:mb-0">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <img src="https://btec.fpt.edu.vn/wp-content/uploads/2024/06/LogoBTEC.png" alt="Logo" class="h-12 w-12 rounded-full border-2 border-yellow-300">
+                        <div class="text-2xl font-extrabold">BTEC IMAGES<span class="text-gradient"> AI</span></div>
+                    </div>
+                    <p class="text-gray-400 max-w-md">
+                        Advanced AI-powered photo editing tools for professionals and creatives.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-12">
+                    
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 mb-4 md:mb-0 text-sm">
+                    © 2025 BTEC IMAGES AI. All rights reserved.
+                </p>
+                <div class="flex space-x-6">
+                    <a href="https://www.facebook.com/ductaistore333/" class="text-gray-500 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                    <a href="https://www.instagram.com/ductai.order/" class="text-gray-500 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                    
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="editimgs.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Authentication check
+            const token = localStorage.getItem("token");
+            if (!token) { window.location.href = "signin.html"; return; }
+
+            // User profile display
+            try {
+                const userData = JSON.parse(localStorage.getItem("user"));
+                if (userData) {
+                    document.getElementById("user-name").textContent = userData.username || "User";
+                    document.getElementById("user-email").textContent = userData.email || "";
+                    document.getElementById("user-button").classList.remove("hidden");
+                }
+            } catch (e) {
+                console.error("Error parsing user data:", e);
+            }
+
+            // Logout functionality
+            document.getElementById("logout-button").addEventListener("click", function() {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                window.location.href = "signin.html";
+            });
+
+            // Toggle text inputs based on AI function selection
+            const aiFunctionSelect = document.getElementById('aiFunction');
+            const textInputContainer = document.getElementById('textInputContainer');
+            const selfieTextInputContainer = document.getElementById('selfieTextInputContainer');
+            
+            aiFunctionSelect.addEventListener('change', function() {
+                textInputContainer.classList.add('hidden');
+                selfieTextInputContainer.classList.add('hidden');
+                
+                if (this.value === 'text-to-image') {
+                    textInputContainer.classList.remove('hidden');
+                } else if (this.value === 'ai-selfie-generator') {
+                    selfieTextInputContainer.classList.remove('hidden');
+                }
+            });
+
+            // Image upload preview
+            const imageUpload = document.getElementById('imageUpload');
+            const uploadedImage = document.getElementById('uploadedImage');
+            const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+            
+            imageUpload.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        uploadedImage.src = event.target.result;
+                        uploadedImage.classList.remove('hidden');
+                        uploadPlaceholder.classList.add('hidden');
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+
+            // Drag and drop functionality
+            const imagePlaceholder = document.querySelector('.image-placeholder');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                imagePlaceholder.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                imagePlaceholder.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                imagePlaceholder.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight() {
+                imagePlaceholder.classList.add('border-primary', 'border-2');
+            }
+
+            function unhighlight() {
+                imagePlaceholder.classList.remove('border-primary', 'border-2');
+            }
+
+            imagePlaceholder.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                imageUpload.files = files;
+                const event = new Event('change');
+                imageUpload.dispatchEvent(event);
+            }
+        });
+    </script>
+</body>
+</html>

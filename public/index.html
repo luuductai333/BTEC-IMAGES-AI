@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTEC IMAGES AI - Next Generation Photo Editing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@700&display=swap');
+        
+        :root {
+            --primary: #6C63FF;
+            --secondary: #FF6584;
+            --dark: #2D3748;
+            --light: #F7FAFC;
+            --accent: #4FD1C5;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+        }
+        
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            min-width: 220px;
+            overflow: hidden;
+            transform: translateY(10px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown:hover .dropdown-menu {
+            display: block;
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .nav-item {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-item:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: var(--secondary);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-item:hover:after {
+            width: 100%;
+        }
+        
+        .hero {
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+        
+        .hero:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            background: linear-gradient(90deg, rgba(108,99,255,0.7) 0%, rgba(79,209,197,0.7) 100%);
+        }
+        
+        .service-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        }
+        
+        .service-card img {
+            transition: transform 0.5s ease;
+        }
+        
+        .service-card:hover img {
+            transform: scale(1.05);
+        }
+        
+        .glow {
+            text-shadow: 0 0 10px rgba(255,255,255,0.8);
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px var(--primary);
+        }
+        
+        .footer-wave {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+        }
+        
+        .footer-wave svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 50px;
+        }
+        
+        .footer-wave .shape-fill {
+            fill: var(--light);
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <header class="gradient-bg text-white py-4 shadow-xl fixed w-full top-0 z-50">
+        <nav class="container mx-auto flex justify-between items-center px-6">
+            <div class="flex items-center space-x-3">
+                <img src="https://btec.fpt.edu.vn/wp-content/uploads/2024/06/LogoBTEC.png" alt="Logo" class="h-12 w-12 rounded-full border-2 border-white shadow-md">
+                <div class="text-3xl font-extrabold tracking-tight">BTEC IMAGES<span class="text-yellow-300"> AI</span></div>
+            </div>
+            <ul class="flex space-x-8 items-center">
+                <li><a href="index.html" class="nav-item text-lg font-semibold">Home</a></li>
+                <li><a href="#services" class="nav-item text-lg font-semibold">Services</a></li>
+                <li><a href="photo_editing.html" class="nav-item text-lg font-semibold">Photo Editing</a></li>
+                <li class="relative dropdown ml-4">
+                    <button id="user-button" class="hidden flex items-center space-x-2 bg-white text-gray-800 px-4 py-2 rounded-full shadow-md hover:shadow-lg transition-all">
+                        <img id="user-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="h-8 w-8 rounded-full border-2 border-yellow-300">
+                        <span id="user-name" class="font-medium"></span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <ul class="dropdown-menu py-2 text-gray-900">
+                        <li class="px-4 py-3 font-semibold border-b border-gray-100 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            <span id="user-email"></span>
+                        </li>
+                        <li>
+                            <button id="logout-button" class="w-full text-left px-4 py-3 hover:bg-red-100 hover:text-red-600 flex items-center transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                Logout
+                            </button>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="home" class="hero h-screen flex flex-col items-center justify-center text-white text-center relative" style="background-image: url('https://www.eetimes.com/wp-content/uploads/AdobeStock_599678056.jpeg');">
+        <div class="relative z-10 px-4 max-w-4xl mx-auto">
+            <h1 class="text-6xl md:text-7xl font-extrabold mb-6 animate__animated animate__fadeInDown glow">Transform Your Images with AI</h1>
+            <p class="text-xl md:text-2xl mb-8 animate__animated animate__fadeIn animate__delay-1s">The most advanced AI-powered photo editing suite that brings your creative vision to life.</p>
+            <a href="#services" class="btn-primary inline-block px-8 py-3 rounded-full text-lg font-bold animate__animated animate__fadeInUp animate__delay-1s">Explore Tools</a>
+        </div>
+        
+        <div class="absolute bottom-10 left-0 right-0 flex justify-center animate__animated animate__fadeIn animate__delay-2s">
+            <a href="#services" class="text-white hover:text-yellow-300 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <section id="services" class="py-20 container mx-auto text-center px-4">
+        <div class="max-w-4xl mx-auto mb-16">
+            <h2 class="text-4xl md:text-5xl font-extrabold mb-4 text-gray-800">AI-Powered Creative Suite</h2>
+            <p class="text-xl text-gray-600">Discover our cutting-edge AI tools designed to revolutionize your photo editing workflow.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="service-card">
+                <div class="overflow-hidden">
+                    <img src="https://images.deepai.org/machine-learning-models/0cca01dade8a48ac95bc5e7d0a4ed5c1/selfie.png" class="w-full h-48 object-cover">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold mb-3 text-gray-800">AI Selfie Generator</h3>
+                    <p class="text-gray-600 mb-4">Create stunning AI-generated portraits from your selfies with various artistic styles.</p>
+                    <a href="photo_editing.html" class="text-purple-600 font-semibold hover:text-purple-800 transition-colors">Try Now →</a>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="overflow-hidden">
+                    <img src="https://images.deepai.org/machine-learning-models/3685da5f3680468aa6cadc400a52bb08/bg_remove_thumb.png" class="w-full h-48 object-cover">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold mb-3 text-gray-800">Background Remover</h3>
+                    <p class="text-gray-600 mb-4">Remove backgrounds instantly with pixel-perfect precision using our AI technology.</p>
+                    <a href="photo_editing.html" class="text-purple-600 font-semibold hover:text-purple-800 transition-colors">Try Now →</a>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="overflow-hidden">
+                    <img src="https://images.deepai.org/machine-learning-models/210f452c80e0482c89edf7a69fec4d46/colorizer.png" class="w-full h-48 object-cover">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold mb-3 text-gray-800">Image Colorizer</h3>
+                    <p class="text-gray-600 mb-4">Bring old black and white photos to life with realistic colorization.</p>
+                    <a href="photo_editing.html" class="text-purple-600 font-semibold hover:text-purple-800 transition-colors">Try Now →</a>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="overflow-hidden">
+                    <img src="https://images.deepai.org/machine-learning-models/0807ebc952fc4e0f9c953ece4551ff22/super_res.png" class="w-full h-48 object-cover">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold mb-3 text-gray-800">Super Resolution</h3>
+                    <p class="text-gray-600 mb-4">Enhance image quality up to 4x without losing important details.</p>
+                    <a href="photo_editing.html" class="text-purple-600 font-semibold hover:text-purple-800 transition-colors">Try Now →</a>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="overflow-hidden">
+                    <img src="https://images.deepai.org/machine-learning-models/eafea118c5204c4ca57096699527f5b3/Before.png" class="w-full h-48 object-cover">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold mb-3 text-gray-800">Expand Image</h3>
+                    <p class="text-gray-600 mb-4">Intelligently expand your images beyond their original borders.</p>
+                    <a href="photo_editing.html" class="text-purple-600 font-semibold hover:text-purple-800 transition-colors">Try Now →</a>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="overflow-hidden">
+                    <img src="https://images.deepai.org/machine-learning-models/b6dcce965af54c26918924813f3cd288/cyborg.jpg" class="w-full h-48 object-cover">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold mb-3 text-gray-800">Text to Image</h3>
+                    <p class="text-gray-600 mb-4">Generate stunning images from text descriptions with our advanced AI.</p>
+                    <a href="photo_editing.html" class="text-purple-600 font-semibold hover:text-purple-800 transition-colors">Try Now →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="py-20 gradient-bg text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl font-extrabold mb-6">Ready to Transform Your Images?</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto">Join thousands of creators who are already using our AI tools to bring their visions to life.</p>
+            <a href="photo_editing.html" class="inline-block bg-white text-purple-600 px-8 py-3 rounded-full text-lg font-bold hover:bg-gray-100 transition-colors shadow-lg">Start Editing Now</a>
+        </div>
+    </section>
+    
+    <footer class="bg-gray-900 text-white pt-20 pb-8 relative">
+        <div class="footer-wave">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+            </svg>
+        </div>
+        
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-8 md:mb-0">
+                    <div class="flex items-center space-x-3">
+                        <img src="https://btec.fpt.edu.vn/wp-content/uploads/2024/06/LogoBTEC.png" alt="Logo" class="h-12 w-12 rounded-full border-2 border-yellow-300">
+                        <div class="text-2xl font-extrabold">BTEC IMAGES<span class="text-yellow-300"> AI</span></div>
+                    </div>
+                    <p class="mt-4 text-gray-400 max-w-md">The most advanced AI-powered photo editing suite for professionals and enthusiasts.</p>
+                </div>
+                
+                
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 mb-4 md:mb-0">© 2025 BTEC IMAGES AI. All rights reserved.</p>
+                <div class="flex space-x-6">
+                    <a href="https://www.facebook.com/ductaistore333/" class="text-gray-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                    <a href="https://www.instagram.com/ductai.order/" class="text-gray-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                    
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async function() {
+            const token = localStorage.getItem("token");
+            if (!token) { window.location.href = "signin.html"; return; }
+
+            try {
+                const response = await fetch("http://localhost:5000/profile", {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+
+                if (!response.ok) { 
+                    localStorage.removeItem("token"); 
+                    window.location.href = "signin.html"; 
+                    return; 
+                }
+
+                const user = await response.json();
+                document.getElementById("user-name").textContent = user.username;
+                document.getElementById("user-email").textContent = user.email;
+                document.getElementById("user-button").classList.remove("hidden");
+                
+                document.getElementById("logout-button").addEventListener("click", function() {
+                    localStorage.removeItem("token");
+                    window.location.href = "signin.html";
+                });
+            } catch (error) {
+                localStorage.removeItem("token");
+                window.location.href = "signin.html";
+            }
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
